@@ -38,7 +38,10 @@ public class PlayerMovementController : MonoBehaviour
 
     //on collision with something
     private void OnCollisionEnter2D(Collision2D collision)
-    {
+    {    
+        Debug.Log("colide");
+        this.transform.parent = collision.transform.parent;
+    
         //if it collides with a wall reset velocity
         if(collision.gameObject.tag == "Wall")
         {
@@ -122,5 +125,9 @@ public class PlayerMovementController : MonoBehaviour
         {
             rb.gravityScale = 1;
         }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        this.transform.parent = null;
     }
 }
