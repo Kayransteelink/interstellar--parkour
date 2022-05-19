@@ -38,14 +38,23 @@ public class PlayerMovementController : MonoBehaviour
 
     //on collision with something
     private void OnCollisionEnter2D(Collision2D collision)
-    {    
-        Debug.Log("colide");
-        this.transform.parent = collision.transform.parent;
+    {
+        if(collision.gameObject.tag == "MovingPlatform")
+        {
+            this.transform.parent = collision.transform.parent;
+        }
     
         //if it collides with a wall reset velocity
         if(collision.gameObject.tag == "Wall")
         {
             rb.velocity = new Vector2(0, 0);
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "MovingPlatform")
+        {
+            this.transform.parent = null;
         }
     }
     // Update is called once per frame
@@ -125,9 +134,5 @@ public class PlayerMovementController : MonoBehaviour
         {
             rb.gravityScale = 1;
         }
-    }
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        this.transform.parent = null;
     }
 }
