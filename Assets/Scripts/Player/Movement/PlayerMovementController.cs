@@ -20,14 +20,20 @@ public class PlayerMovementController : MonoBehaviour
 
     //wall jumping
     public Transform[] wallCheck;
-    public bool onWallRight;
-    public bool onWallLeft;
+    bool onWallRight;
+    bool onWallLeft;
     public bool onWall;
 
     public bool wallJump;
 
     public LayerMask wallMask;
     public float wallGravity;
+
+    //ceiling climbing
+    public Transform ceilingCheck;
+    public bool OnCeiling;
+
+    public LayerMask ceilingMask;
 
     // Start is called before the first frame update
     void Start()
@@ -80,55 +86,84 @@ public class PlayerMovementController : MonoBehaviour
             wallJump = false;
         }
 
+        //check if on ceiling
+        OnCeiling = Physics2D.OverlapCircle(ceilingCheck.position, 0.1f, ceilingMask);
+
+
         //Movement
         if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
         {
+            float dirX = Input.GetAxis("Horizontal");
             if (wallJump)
             {
                 rb.velocity = new Vector2(0, 0);
                 wallJump = false;
             }
-            if(!onWallLeft)
+            if(!onWallLeft && !OnCeiling)
             {
-                float dirX = Input.GetAxis("Horizontal");
                 rb.velocity = new Vector2(dirX * speed, rb.velocity.y);
+            }
+            if(OnCeiling)
+            {
+                rb.velocity = new Vector2(dirX * (speed / 2.5f), rb.velocity.y);
             }
         }
         if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
         {
+            float dirX = Input.GetAxis("Horizontal");
             if (wallJump)
             {
                 rb.velocity = new Vector2(0, 0);
                 wallJump = false;
             }
-            if (!onWallRight)
+            if (!onWallRight && !OnCeiling)
             {
-                float dirX = Input.GetAxis("Horizontal");
                 rb.velocity = new Vector2(dirX * speed, rb.velocity.y);
+            }
+            if (OnCeiling)
+            {
+                rb.velocity = new Vector2(dirX * (speed / 2.5f), rb.velocity.y);
             }
         }
 
         //Jump
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            rb.velocity = new Vector2(rb.velocity.x, jumpheight);
+            if(isGrounded)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpheight);
+            }
+
+            //walljump
+            if (onWall)
+            {
+                rb.gravityScale = wallGravity;
+
+                if (onWallRight)
+                {
+                    wallJump = true;
+                    rb.velocity = new Vector2(-distance, distance);
+                }
+                if (onWallLeft)
+                {
+                    wallJump = true;
+                    rb.velocity = new Vector2(distance, distance);
+                }
+            }
+            if(OnCeiling)
+            {
+                rb.velocity = new Vector2(0, -jumpheight / 2);
+            }
+            else
+            {
+                rb.gravityScale = 1;
+            }
         }
 
-        //walljump
-        if (onWall)
+        //ceiling climbing
+        if(OnCeiling)
         {
-            rb.gravityScale = wallGravity;
-
-            if(Input.GetKeyDown(KeyCode.Space) && onWallRight)
-            {
-                wallJump = true;
-                rb.velocity = new Vector2(-distance, distance);
-            }
-            if (Input.GetKeyDown(KeyCode.Space) && onWallLeft)
-            {
-                wallJump = true;
-                rb.velocity = new Vector2(distance, distance);
-            }
+            rb.gravityScale = -1;
         }
         else
         {
