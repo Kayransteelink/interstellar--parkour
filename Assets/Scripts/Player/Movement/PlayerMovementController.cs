@@ -29,6 +29,8 @@ public class PlayerMovementController : MonoBehaviour
     public LayerMask wallMask;
     public float wallGravity;
 
+    public float climbSeconds;
+
     //ceiling climbing
     public Transform ceilingCheck;
     public bool OnCeiling;
@@ -164,10 +166,27 @@ public class PlayerMovementController : MonoBehaviour
         if(OnCeiling)
         {
             rb.gravityScale = -1;
+            StartCoroutine(Check());
         }
         else
         {
             rb.gravityScale = 1;
+        }
+        IEnumerator Check()
+        {
+            Vector3 lastPos = this.transform.position;
+            float seconds = climbSeconds;
+            while (seconds > 0)
+            {
+                seconds -= Time.deltaTime;
+                if (lastPos != this.transform.position)
+                {
+                    yield break;
+                }
+                lastPos = this.transform.position;
+                yield return new WaitForEndOfFrame();
+            }
+            rb.velocity = new Vector2(0, -jumpheight / 2);
         }
     }
 }

@@ -1614,6 +1614,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   wallGravity: 0.25
+  climbSeconds: 5
   ceilingCheck: {fileID: 2032960435}
   OnCeiling: 0
   ceilingMask:
