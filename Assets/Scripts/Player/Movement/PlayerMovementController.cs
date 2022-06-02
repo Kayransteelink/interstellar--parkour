@@ -98,14 +98,13 @@ public class PlayerMovementController : MonoBehaviour
             float dirX = Input.GetAxis("Horizontal");
             if (wallJump)
             {
-                rb.velocity = new Vector2(0, 0);
-                wallJump = false;
+
             }
-            if(!onWallLeft && !OnCeiling)
+            if(!onWallLeft && !OnCeiling && !wallJump)
             {
                 rb.velocity = new Vector2(dirX * speed, rb.velocity.y);
             }
-            if(OnCeiling)
+            if(OnCeiling && !wallJump)
             {
                 rb.velocity = new Vector2(dirX * (speed / 2.5f), rb.velocity.y);
             }
@@ -115,14 +114,13 @@ public class PlayerMovementController : MonoBehaviour
             float dirX = Input.GetAxis("Horizontal");
             if (wallJump)
             {
-                rb.velocity = new Vector2(0, 0);
-                wallJump = false;
+
             }
-            if (!onWallRight && !OnCeiling)
+            if (!onWallRight && !OnCeiling && !wallJump)
             {
                 rb.velocity = new Vector2(dirX * speed, rb.velocity.y);
             }
-            if (OnCeiling)
+            if (OnCeiling && !wallJump)
             {
                 rb.velocity = new Vector2(dirX * (speed / 2.5f), rb.velocity.y);
             }
@@ -139,8 +137,6 @@ public class PlayerMovementController : MonoBehaviour
             //walljump
             if (onWall)
             {
-                rb.gravityScale = wallGravity;
-
                 if (onWallRight)
                 {
                     wallJump = true;
@@ -162,15 +158,19 @@ public class PlayerMovementController : MonoBehaviour
             }
         }
 
+        if (!OnCeiling || !onWall)
+        {
+            rb.gravityScale = 1;
+        }
+        if (onWall)
+        {
+            rb.gravityScale = wallGravity;
+        }
         //ceiling climbing
         if(OnCeiling)
         {
             rb.gravityScale = -1;
             StartCoroutine(Check());
-        }
-        else
-        {
-            rb.gravityScale = 1;
         }
         IEnumerator Check()
         {
